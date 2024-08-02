@@ -1,0 +1,26 @@
+{
+  "name": "authentication",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tharmithan-N/authentication.git"
+  },
+  "author": "Tharmithan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tharmithan-N/authentication/issues"
+  },
+  "homepage": "https://github.com/Tharmithan-N/authentication#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "gitignore": "^0.7.0",
+    "mongoose": "^8.5.2",
+    "nodemon": "^3.1.4"
+  }
+}
