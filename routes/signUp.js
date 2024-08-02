@@ -1,21 +1,25 @@
 const express = require("express");
 const router = express.Router();
 const signUpModel = require("../models/signUp");
+const bcrypt = require("bcrypt");
 
-router.post("/", (req, res) => {
-  const signUp = new signUpModel({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  });
-  signUp
-    .save()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.send(err);
+const salt_rounds = 10;
+
+router.post("/", async (req, res) => {
+  try {
+    const hashedPassword = await bcrypt.hash(req.body.password, salt_rounds);
+
+    const signUp = new signUpModel({
+      name: req.body.name,
+      email: req.body.email,
+      password: hashedPassword,
     });
+
+    const data = await signUp.save();
+    res.status(201).send(data);
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
 });
 
 router.get("/", (req, res) => {
@@ -62,11 +66,33 @@ router.delete("/:id", (req, res) => {
   const deleteUser = signUpModel
     .findByIdAndDelete(req.params.id)
     .then((data) => {
-        res.send(data)
+      res.send(data);
     })
     .catch((err) => {
       res.send(err);
     });
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const user = await signUpModel.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+
+    if (!validPassword) {
+      return res.status(400).send({ error: "Invalid password" });
+    }
+
+    res.send({ message: "Login successful" });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+});
 module.exports = router;
